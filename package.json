@@ -1,0 +1,21 @@
+{
+  "name": "webcrawling",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.6.0",
+    "cheerio": "^1.0.0-rc.2",
+    "express": "^4.16.2",
+    "fs": "^0.0.1-security",
+    "nickjs": "^0.3.2",
+    "puppeteer": "^1.1.1",
+    "request": "^2.83.0"
+  }
+}

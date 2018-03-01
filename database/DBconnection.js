@@ -1,18 +1,10 @@
 var mysql = require('mysql');
+var KEYS = require('../config/mySqlInfo.js');
 
-var con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "root",
-  database: "BOOKS"
+module.exports =  _connection = mysql.createConnection({
+  host: KEYS.host,
+  user: KEYS.user,
+  password: KEYS.password,
+  database: KEYS.database
 });
 
-con.connect(function(err) {
-  if (err) throw err;
-  console.log("Connected!");
-  var sql = "CREATE TABLE BOOKS (ISBN VARCHAR(255), title VARCHAR(255), author VARCHAR(255), stars VARCHAR(255), publisher VARCHAR(255), summary VARCHAR(255))";
-  con.query(sql, function (err, result) {
-    if (err) throw err;
-    console.log("Table created");
-  });
-});

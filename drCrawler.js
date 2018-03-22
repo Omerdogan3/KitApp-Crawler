@@ -1,12 +1,8 @@
 const puppeteer = require('puppeteer');
-
 const devices = require('puppeteer/DeviceDescriptors');
 const iPhone = devices['iPhone 6'];
-
 var _connection = require('./database/DBconnection');
 var util = require('util');
-
-
 let browser;
 let page;
 
@@ -40,7 +36,7 @@ module.exports = scapeDr = async (firstLaunch, category, step, next, isScroll) =
   await page.click(findedBook);
   await page.waitFor(2000);
   if(tmpUrl === page.url()){
-    console.log('returned');
+    //console.log('returned');
     return;
   }
 
@@ -53,6 +49,7 @@ module.exports = scapeDr = async (firstLaunch, category, step, next, isScroll) =
     let stars;
     let summary;
     let title = document.querySelector('h1').innerText;
+    let productId = document.URL;
 
     const productDetails = "#catPageContent > section.product-details > div.container > div.all-details > div.specs > ";
     
@@ -78,7 +75,8 @@ module.exports = scapeDr = async (firstLaunch, category, step, next, isScroll) =
         author,
         stars,
         publisher,
-        summary
+        summary,
+        productId
     }
   });
 
@@ -102,9 +100,6 @@ module.exports = scapeDr = async (firstLaunch, category, step, next, isScroll) =
   //         // if there is no error, you have the result
   //         // console.log(result);
   //       });
-
-
   
   return result;
 };
-

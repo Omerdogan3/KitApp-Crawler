@@ -88,7 +88,8 @@ module.exports = scapeDr = async (firstLaunch, category, step, next, isScroll) =
     await page.goBack();
   }
   
-  console.log(result.ISBN);
+  // console.log(result.ISBN);
+  
   // var sql = util.format('insert into books (ISBN, title, author, stars, publisher, summary) values ("%d","%s","%s","%s","%s","%s")'
   //        , result.ISBN.slice(6), result.title , result.author, result.stars, 'a', 'xc');
   

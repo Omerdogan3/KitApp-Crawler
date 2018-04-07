@@ -1,4 +1,3 @@
-
 var _connection = require('./database/DBconnection');
 var util = require('util');
 

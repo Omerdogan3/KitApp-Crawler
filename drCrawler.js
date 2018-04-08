@@ -4,17 +4,18 @@ const iPhone = devices['iPhone 6'];
 var _connection = require('./database/DBconnection');
 var util = require('util');
 
-
 let browser;
 let page;
 
 module.exports = scapeDr = async (firstLaunch, category, step, next, isScroll) => {
-  console.log(isScroll);
+  
+  // console.log(isScroll);
   if(firstLaunch){
       browser = await puppeteer.launch({headless: false, args: [
         `--window-size=${ 400 },${ 800 }`
       ]});
       page = await browser.newPage();
+      page.setDefaultNavigationTimeout(100000);
       
       await page.emulate(iPhone);
       await page.goto("http://www.dr.com.tr/One-Cikan-Kategoriler");
@@ -49,7 +50,9 @@ module.exports = scapeDr = async (firstLaunch, category, step, next, isScroll) =
     let publisher;
     let ISBN;
     let stars;
+    let category;
     let summary;
+    let imageLink;
     let title = document.querySelector('h1').innerText;
     let productId = document.URL;
 
@@ -67,6 +70,12 @@ module.exports = scapeDr = async (firstLaunch, category, step, next, isScroll) =
     if(document.querySelector("#catPageContent > section.product-details > div.container > div.head > div:nth-child(2) > span")!= null){
       stars =document.querySelector("#catPageContent > section.product-details > div.container > div.head > div:nth-child(2) > span").innerText;
     }
+    if(document.querySelector("#catPageContent > section.sub-categories > div > div > ul > li.lastElement > a")!= null){
+      category =document.querySelector("#catPageContent > section.sub-categories > div > div > ul > li.lastElement > a").innerText;
+    }
+    if(document.querySelector("#catPageContent > section.product-details > div.container > div.all-details > div.images > figure > a")!= null){
+      imageLink =document.querySelector("#catPageContent > section.product-details > div.container > div.all-details > div.images > figure > a").getAttribute('href');
+    }
     if(document.querySelector("#catPageContent > section.product-details > div.container > div.summary")!=null){
       summary = document.querySelector("#catPageContent > section.product-details > div.container > div.summary").innerText;
     }
@@ -77,32 +86,17 @@ module.exports = scapeDr = async (firstLaunch, category, step, next, isScroll) =
         author,
         stars,
         publisher,
+        category,
+        imageLink,
         summary,
         productId
     }
   });
 
-  
-      
-
   //eger ki datayi alamazsa tekrardan geri gitmesini onlemek icin.
   if(page.url().startsWith('http://www.dr.com.tr/kategori/') === false){
     await page.goBack();
   }
-  
-  // console.log(result.ISBN);
-  
-  // var sql = util.format('insert into books (ISBN, title, author, stars, publisher, summary) values ("%d","%s","%s","%s","%s","%s")'
-  //        , result.ISBN.slice(6), result.title , result.author, result.stars, 'a', 'xc');
-  
-  // // , result.ISBN.slice(6), result.title, result.author, result.stars.charAt(0), result.publisher, result.summary);
-
-  //       await _connection.query(sql , function (err, result, fields) {
-  //         // if any error while executing above query, throw error
-  //         if (err) throw err;
-  //         // if there is no error, you have the result
-  //         // console.log(result);
-  //       });
   
   return result;
 };

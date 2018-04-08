@@ -5,5 +5,5 @@ module.exports =  _connection = mysql.createConnection({
   host: KEYS.host,
   user: KEYS.user,
   password: KEYS.password,
-  database: 'kitappdb'
+  database: KEYS.database
 });

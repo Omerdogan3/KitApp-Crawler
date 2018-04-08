@@ -3,6 +3,8 @@ const devices = require('puppeteer/DeviceDescriptors');
 const iPhone = devices['iPhone 6'];
 var _connection = require('./database/DBconnection');
 var util = require('util');
+
+
 let browser;
 let page;
 

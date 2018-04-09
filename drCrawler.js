@@ -15,7 +15,7 @@ module.exports = scapeDr = async (firstLaunch, category, step, next, isScroll) =
         `--window-size=${ 400 },${ 800 }`
       ]});
       page = await browser.newPage();
-      page.setDefaultNavigationTimeout(100000);
+      page.setDefaultNavigationTimeout(300000);
       
       await page.emulate(iPhone);
       await page.goto("http://www.dr.com.tr/One-Cikan-Kategoriler");
@@ -26,12 +26,23 @@ module.exports = scapeDr = async (firstLaunch, category, step, next, isScroll) =
   }
 
 	if(next === true){
-			const nextButton = '#catPageContent > div.container.pager-content > ul > li:nth-child(7) > a.next';
+      const nextButton = '#catPageContent > div.container.pager-content > ul > li:nth-child(7) > a.next';
+      
+      // await page.$$eval('a', anchors => {
+      //   anchors.map(anchor => {
+      //       if(anchor.class == 'next') {
+      //           anchor.click();
+      //           return
+      //         }
+      //     })
+      // });
+
 			await page.waitForSelector(nextButton);
       await page.click(nextButton);
-			return null;
+      await page.waitFor(5000);
+      return null;
 	}
-
+  
   const findedBook = '#container > div:nth-child('+ step + ') > div > a:nth-child(1) > figure > img';
   await page.waitForSelector(findedBook);
   
@@ -81,14 +92,14 @@ module.exports = scapeDr = async (firstLaunch, category, step, next, isScroll) =
     }
 
     return {
-        ISBN,
+        ISBN: ISBN.slice(6),
         title,
         author,
         stars,
         publisher,
         category,
         imageLink,
-        summary,
+        summary: summary.replace(/['"]+/g, ''),
         productId
     }
   });

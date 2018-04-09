@@ -1,7 +1,5 @@
 var util = require('util');
 var scapeDr = require('../drCrawler');
-// const CheckBook = require('../database/CheckBook');
-require('../database/CheckAuthor');
 
 let step;
 let firstLaunch = true;
@@ -14,40 +12,23 @@ let bookSqlObj= {
 };
 
 module.exports = async function processCrawler(){
-  for(let category=2; category<=24; category=category+2){
+  for(let category=4; category<=24; category=category+2){
       let nextPage = false;
       for(step=1; step<=85; step=step+2){
-          if(step>83){
+          if(step===85){
               nextPage = true;
               await scapeDr(firstLaunch,category,1,nextPage);
           }else{
             let bookJson = await scapeDr(firstLaunch,category, step,nextPage);
 
-            // console.log(bookJson);
+                if(bookJson != null){              
+                    await _connection.query(util.format("SELECT ISBN FROM books where ISBN = '%s'", bookJson.ISBN.slice(6)), (err, res, fields) => {
+                        if(JSON.stringify(res) === JSON.stringify([])){ 
+                            insertAuthor(bookJson);
+                        }
+                    });
+                }
 
-
-            if(bookJson != null){              
-                
-                // var bookSQL = util.format('INSERT INTO `books`(`ISBN`, `title`, `introduction`, `publisher_id`, `category_id`, `image_id`, `author_id`, `stars`) VALUES ("%d","%s","%s","%s","%s","%s","%s","%s")'
-                // , bookJson.ISBN.slice(6), bookJson.title, bookJson.summary,2,4,null,null,bookJson.stars.charAt(0));
-
-                // console.log(bookSQL);
-
-                await _connection.query(util.format("SELECT ISBN FROM books where ISBN = '%s'", bookJson.ISBN.slice(6)), (err, res, fields) => {
-                    // if (err) throw err;
-                    if(JSON.stringify(res) === JSON.stringify([])){ //eger ki ekli degilse
-                        // console.log(bookJson.imageLink);
-                        insertAuthor(bookJson);
-                    }
-                });
-            }
-               
-
-                //gelen linkin son 13 karakteri product id
-                // var setProductId = await util.format('insert into productid(ISBN, DrID, KitapYurduID, PandoraID) VALUES ("%d","%d","%d","%d")', bookJson.ISBN.slice(6),  bookJson.productId.slice(bookJson.productId.length-13), 11, 10);
-                // await _connection.query(setProductId, (err,result)=>{
-
-                // });
             }
             firstLaunch = false;
           }   
@@ -112,31 +93,65 @@ module.exports = async function processCrawler(){
         if(JSON.stringify(result) === JSON.stringify([])){ //select bos object donerse
             _connection.query(util.format("INSERT INTO `image` (`image_id`, `image_link`) VALUES (NULL, '%s')",bookJson.imageLink), function (err, res, fields) {
                 _connection.query(util.format("SELECT image_id FROM `image` where image_link LIKE '%s'", bookJson.imageLink), function (err, r, fields){
-                    // bookSqlObj.image_id = JSON.parse(r[0].image_id);
-                    console.log(JSON.stringify(r));
+                    bookSqlObj.image_id = JSON.parse(r[0].image_id);
+                    // console.log(JSON.stringify(r));
+                    insertBooks(bookJson);
                 });
             });
         }else{
             bookSqlObj.image_id = JSON.parse(result[0].image_id);
-            console.log(bookSqlObj);
+            insertBooks(bookJson);
         }
     });
   };
 
 
 
+  insertBooks = (bookJson) => {
+    _connection.query(util.format("SELECT ISBN FROM books where ISBN = '%s'", bookJson.ISBN), function (err, result, fields) {
+        if(JSON.stringify(result) === JSON.stringify([])){ //select bos object donerse
+            _connection.query(util.format('INSERT INTO `books`(`ISBN`, `title`, `introduction`, `publisher_id`, `category_id`, `image_id`, `author_id`, `stars`) VALUES ("%d","%s","%s","%s","%s","%s","%s","%s")',
+                bookJson.ISBN, 
+                bookJson.title, 
+                bookJson.summary,
+                bookSqlObj.publisher_id,
+                bookSqlObj.category_id,
+                bookSqlObj.image_id,
+                bookSqlObj.author_id,
+                bookJson.stars.charAt(0)
+            ), function (err, res, fields) {
+                if(err){
+                    console.log(bookJson.ISBN);
+                }
+                insertBookAuthor(bookJson); 
+            });
+        }else{
+            // console.log(bookSqlObj);
+            insertBookAuthor(bookJson);
+        }
+    });
+  };
 
-
-
-
-
-
-
-  
 
   insertBookAuthor = (bookJson) => {
-    _connection.query(util.format("INSERT INTO `book_author` (`ISBN`, `author_id`) VALUES (NULL, '%s')",bookJson.ISBN, bookSqlObj.author_id), function (err, res, fields) {
+    _connection.query(util.format("SELECT ISBN FROM book_author where author_id = '%s'", bookSqlObj.author_id), function (err, result, fields) {
+        if(JSON.stringify(result) === JSON.stringify([])){ //select bos object donerse
+            _connection.query(util.format("INSERT INTO `book_author` (`ISBN`, `author_id`) VALUES ('%s', '%s')", bookJson.ISBN, bookSqlObj.author_id), function (err, res, fields) {
+                insertBookImage(bookJson);
+            });
+        }else{
+            insertBookImage(bookJson);
+        }
+    });
+  };
 
+  insertBookImage = (bookJson) => {
+    _connection.query(util.format("SELECT ISBN FROM book_image where image_id = '%s'", bookSqlObj.image_id), function (err, result, fields) {
+        if(JSON.stringify(result) === JSON.stringify([])){ //select bos object donerse
+            _connection.query(util.format("INSERT INTO `book_image` (`ISBN`, `image_id`) VALUES ('%s', '%s')", bookJson.ISBN, bookSqlObj.image_id), function (err, res, fields) {
+                // if(err) console.log(err);
+            });
+        }
     });
   };
 

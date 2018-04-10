@@ -75,8 +75,8 @@ module.exports = scapeDr = async (firstLaunch, category, step, next, isScroll) =
     if(document.querySelector(productDetails + 'div:nth-child(1) > span > a > span') != null){
       author = document.querySelector(productDetails + 'div:nth-child(1) > span > a > span').innerText;
     }
-    if(document.querySelector(productDetails + 'div:nth-child(2) > h2 > a') != null){
-      publisher = document.querySelector(productDetails + 'div:nth-child(2) > h2 > a').innerText;
+    if(document.querySelector('#publisherName') != null){
+      publisher = document.querySelector('#publisherName').innerText;
     }
     if(document.querySelector("#catPageContent > section.product-details > div.container > div.head > div:nth-child(2) > span")!= null){
       stars =document.querySelector("#catPageContent > section.product-details > div.container > div.head > div:nth-child(2) > span").innerText;

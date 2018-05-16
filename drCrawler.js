@@ -15,7 +15,7 @@ module.exports = scapeDr = async (firstLaunch, category, step, next, isScroll) =
         `--window-size=${ 400 },${ 800 }`
       ]});
       page = await browser.newPage();
-      page.setDefaultNavigationTimeout(300000);
+      
       
       await page.emulate(iPhone);
       await page.goto("http://www.dr.com.tr/One-Cikan-Kategoriler");
@@ -24,6 +24,7 @@ module.exports = scapeDr = async (firstLaunch, category, step, next, isScroll) =
       
       await page.click(`#ph-topic > div.page-body > div > div > div > div:nth-child(`+ category + `) > a > img`); 
   }
+  page.setDefaultNavigationTimeout(300000);
 
 	if(next === true){
       const nextButton = '#catPageContent > div.container.pager-content > ul > li:nth-child(7) > a.next';
@@ -37,7 +38,7 @@ module.exports = scapeDr = async (firstLaunch, category, step, next, isScroll) =
       //     })
       // });
 
-			await page.waitForSelector(nextButton);
+	  await page.waitForSelector(nextButton);
       await page.click(nextButton);
       await page.waitFor(5000);
       return null;

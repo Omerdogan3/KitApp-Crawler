@@ -15,12 +15,13 @@ module.exports = insertBooks = (bookJson, bookSqlObj) => {
                 bookJson.stars.charAt(0)
             ), function (err, res, fields) {
                 if(err){
-                    console.log(bookJson.ISBN);
+                    console.log(bookJson.ISBN, 'error');
                 }
+
                 insertBookAuthor(bookJson,bookSqlObj); 
             });
         }else{
-            // console.log(bookSqlObj);
+
             insertBookAuthor(bookJson,bookSqlObj);
         }
     });

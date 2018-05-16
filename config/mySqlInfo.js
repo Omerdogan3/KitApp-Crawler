@@ -7,7 +7,7 @@
 
 module.exports = {
     host: 'localhost',
-    database: 'kitappdb',
+    database: 'kitappprod',
     user: 'root',
     password: 'root'
 };

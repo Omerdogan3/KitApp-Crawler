@@ -13,7 +13,8 @@ let bookSqlObj= {
 };
 
 module.exports = async function processCrawler(){
-  for(let category=4; category<=24; category=category+2){
+  let category = 12; //each category increases +2
+  while(true){
       let nextPage = false;
       for(step=1; step<=85; step=step+2){
           if(step===85){
@@ -24,6 +25,7 @@ module.exports = async function processCrawler(){
                 if(bookJson != null){              
                     await _connection.query(util.format("SELECT ISBN FROM books where ISBN = '%s'", bookJson.ISBN.slice(6)), (err, res, fields) => {
                         if(JSON.stringify(res) === JSON.stringify([])){ 
+                            console.log(bookJson.ISBN, bookJson.title);
                             insertAuthor(bookJson,bookSqlObj);
                         }
                     });
@@ -32,8 +34,8 @@ module.exports = async function processCrawler(){
             firstLaunch = false;
           }   
       }
-      console.log('Done!');
-  }
+    console.log('Done!');
+}
 
 
 
